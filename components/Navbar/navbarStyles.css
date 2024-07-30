@@ -1,0 +1,37 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  padding: 10px;
+}
+
+.navbar-top {
+  display: flex;
+  align-items: start;
+  padding: 10px 30px;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.navbar-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.add-project-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.add-project-button:hover {
+  background-color: darkred;
+}
