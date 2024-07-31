@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { projectsData as initialData } from './data';
+import { projectsData as initialData } from '@/data/data';
 
 interface Project {
     id: string;
