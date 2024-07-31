@@ -16,18 +16,20 @@ export const metadata: Metadata = {
   publisher: 'Navas, Carlos Gabriel',
 };
 
-export default function RootLayout(props: {
+interface props {
   children: React.ReactNode;
   modal: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children, modal }: props) {
   return (
     <html lang="es">
       <body className={`${inter.className} flex flex-col`}>
         <Navbar data-testid="navbar" />
         <div className="flex flex-row">
           <main className="w-full h-full">
-            {props.children}
-            {props.modal}
+            {children}
+            {modal}
           </main>
         </div>
       </body>
