@@ -8,6 +8,7 @@ Este es un proyecto de frontend para una plataforma de gestión de proyectos que
 - [Especificaciones Técnicas](#especificaciones-técnicas)
 - [Instalación](#instalación)
 - [Ejecutar la Aplicación](#ejecutar-la-aplicación)
+- [Despliegue](#despliegue)
 
 ## Definición Funcional
 
@@ -54,3 +55,7 @@ npm run dev
 ```bash
 npm test
 ```
+
+## Despliegue
+
+- El proyecto está desplegado en Vercel y puede ser accesado en el siguiente enlace: https://esto-lhebjzq09-gabrielnavas98s-projects.vercel.app/
