@@ -16,8 +16,8 @@ export const validateForm = (formData: FormData): Errors => {
   if (formData.name.length < 8 || formData.name.length > 16) {
     errors.name = 'Name must be between 8 and 16 characters';
   }
-  if (formData.description.length < 8) {
-    errors.description = 'Description must be at least 8 characters';
+  if (formData.description.length < 8 || formData.description.length > 50) {
+    errors.description = 'Description must be between 8 and 50 characters';
   }
   if (!formData.manager) {
     errors.manager = 'Manager is required';
@@ -31,25 +31,25 @@ export const validateForm = (formData: FormData): Errors => {
 
 export const validateField = (name: string, value: string) => {
   let error = '';
-
+  const trimmedValue = value.trim();
   switch (name) {
     case 'name':
-      if (value.length < 8 || value.length > 16) {
+      if (trimmedValue.length < 8 || trimmedValue.length > 16) {
         error = 'Name must be between 8 and 16 characters';
       }
       break;
     case 'description':
-      if (value.length < 8) {
-        error = 'Description must be at least 8 characters';
+      if (trimmedValue.length < 8 || trimmedValue.length > 50) {
+        error = 'Description must be between 8 and 50 characters';
       }
       break;
     case 'manager':
-      if (!value) {
+      if (!trimmedValue) {
         error = 'Manager is required';
       }
       break;
     case 'assignedTo':
-      if (!value) {
+      if (!trimmedValue) {
         error = 'Developer is required';
       }
       break;

@@ -9,7 +9,7 @@ const columns = [
 const projectsData = [
   {
     id: '1',
-    name: 'Landing page Esto es',
+    name: 'Landing page',
     createdAt: new Date(),
     manager: 'Walt Cosani',
     avatarManager: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
@@ -20,7 +20,7 @@ const projectsData = [
   },
   {
     id: '2',
-    name: 'Challenge FrontEnd',
+    name: 'Challenge Front',
     createdAt: new Date(),
     manager: 'Walt Cosani',
     avatarManager: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
@@ -31,7 +31,7 @@ const projectsData = [
   },
   {
     id: '3',
-    name: 'Landing page',
+    name: 'LandingPage',
     createdAt: new Date(),
     manager: 'Walt Cosani',
     avatarManager: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',

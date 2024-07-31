@@ -46,7 +46,7 @@ const ProjectForm = ({ isEdit, id }: FormProps) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === 'description' ? value.trim() : value,
     });
 
     const error = validateField(name, value);
@@ -202,7 +202,7 @@ const ProjectForm = ({ isEdit, id }: FormProps) => {
         type="submit"
         className="bg-red-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto hover:bg-red-700"
       >
-        {isEdit ? 'Edit Project' : 'Create Project'}
+        {isEdit ? 'Save Changes' : 'Create Project'}
       </button>
     </form>
   );

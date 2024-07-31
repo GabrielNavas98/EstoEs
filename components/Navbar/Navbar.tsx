@@ -22,24 +22,29 @@ const Navbar = () => {
       <div className="flex justify-between items-center p-2.5 sm:p-4 text-lg font-semibold">
         <div className="flex items-center">
           {!isRoot && (
-            <button
-              onClick={handleBackClick}
-              className="text-gray-700 hover:text-gray-900 mr-4"
-            >
-              <BackIcon />
-            </button>
+            <div className="flex items-center justify-start mr-2">
+              <button
+                onClick={handleBackClick}
+                className="text-gray-700 hover:text-gray-900 mr-4"
+              >
+                <BackIcon />
+              </button>
+              <span className="text-sm text-default-600">Back</span>
+            </div>
           )}
           <Link href="/" passHref className="text-gray-900">
             My projects
           </Link>
         </div>
-        <Link
-          href="/projectForm/new"
-          passHref
-          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
-        >
-          + Add project
-        </Link>
+        {isRoot && (
+          <Link
+            href="/projectForm/new"
+            passHref
+            className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-900"
+          >
+            + Add project
+          </Link>
+        )}
       </div>
     </nav>
   );

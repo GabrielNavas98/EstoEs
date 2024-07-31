@@ -38,7 +38,7 @@ describe('validateForm', () => {
         const errors: Errors = validateForm(invalidFormData);
         expect(errors).toEqual({
             name: 'Name must be between 8 and 16 characters',
-            description: 'Description must be at least 8 characters',
+            description: 'Description must be between 8 and 50 characters',
             manager: 'Manager is required',
             assignedTo: 'Developer is required',
         });
@@ -58,7 +58,7 @@ describe('validateField', () => {
 
     it('should return an error for a short description', () => {
         const error: string = validateField('description', 'Short');
-        expect(error).toBe('Description must be at least 8 characters');
+        expect(error).toBe('Description must be between 8 and 50 characters');
     });
 
     it('should return no error for a valid description', () => {

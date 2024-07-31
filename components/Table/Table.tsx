@@ -245,16 +245,16 @@ export default function CustomTable() {
       </div>
       <div className="py-2 flex justify-center">
         <button
-          className="px-4 py-2 border rounded"
-          disabled={page === 1}
+          className={`px-4 py-2 border rounded ${page === 1 ? 'hidden' : ''}`}
           onClick={() => setPage(page - 1)}
         >
           Previous
         </button>
         <span className="px-4 py-2">{page}</span>
         <button
-          className="px-4 py-2 border rounded"
-          disabled={page === pages}
+          className={`px-4 py-2 border rounded ${
+            page === pages ? 'hidden' : ''
+          }`}
           onClick={() => setPage(page + 1)}
         >
           Next
