@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -26,16 +26,11 @@ const statusColorMap: Record<string, ChipProps['color']> = {
 export default function CustomTable() {
   const router = useRouter();
   const { projectsData, deleteProject } = useProjectsStore();
-  let loading = false;
   const [filterValue, setFilterValue] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    loading = true;
-  }, [projectsData]);
 
   const pages = Math.ceil(projectsData.length / rowsPerPage);
 
