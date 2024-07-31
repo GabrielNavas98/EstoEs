@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
-import useProjectsStore from '@/data/useProjectsStore';
-import { managers, developers } from './dataMock';
-
+import useProjectsStore from '@/store/useProjectsStore';
+import { managers, developers } from '@/data/data';
+import { validateField, validateForm } from '@/utilities/validationForm';
 import './style.css';
 
 interface FormProps {
@@ -23,6 +23,7 @@ const ProjectForm = ({ isEdit, id }: FormProps) => {
     assignedTo: '',
     status: 'Enabled',
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (isEdit && id) {
@@ -46,9 +47,21 @@ const ProjectForm = ({ isEdit, id }: FormProps) => {
       ...formData,
       [name]: value,
     });
+
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
     if (isEdit) {
       updateProject({
         ...formData,
@@ -78,74 +91,118 @@ const ProjectForm = ({ isEdit, id }: FormProps) => {
   };
   return (
     <form className="project-form" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label htmlFor="name">Project name</label>
+      <div className="form-group mb-4">
+        <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+          Project name
+        </label>
         <input
           type="text"
           id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
+          className={`shadow appearance-none border ${
+            errors.name ? 'border-red-500' : 'border-gray-300'
+          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         />
+        {errors.name && (
+          <p className="text-red-500 text-xs italic">{errors.name}</p>
+        )}
       </div>
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
+      <div className="form-group mb-4">
+        <label
+          htmlFor="description"
+          className="block text-gray-700 font-bold mb-2"
+        >
+          Description
+        </label>
         <textarea
           id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
+          className={`shadow appearance-none border ${
+            errors.description ? 'border-red-500' : 'border-gray-300'
+          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         ></textarea>
+        {errors.description && (
+          <p className="text-red-500 text-xs italic">{errors.description}</p>
+        )}
       </div>
-      <div className="form-group">
-        <label htmlFor="manager">Project manager</label>
+      <div className="form-group mb-4">
+        <label htmlFor="manager" className="block text-gray-700 font-bold mb-2">
+          Project manager
+        </label>
         <select
           id="manager"
           name="manager"
           value={formData.manager}
           onChange={handleChange}
+          className={`shadow appearance-none border ${
+            errors.manager ? 'border-red-500' : 'border-gray-300'
+          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         >
           <option value="">Select manager</option>
-          {managers.map((manager) => {
-            return <option key={manager.id}>{manager.name}</option>;
-          })}
+          {managers.map((manager) => (
+            <option key={manager.id} value={manager.name}>
+              {manager.name}
+            </option>
+          ))}
         </select>
+        {errors.manager && (
+          <p className="text-red-500 text-xs italic">{errors.manager}</p>
+        )}
       </div>
-      <div className="form-group">
-        <label htmlFor="assignedTo">Assigned to</label>
+      <div className="form-group mb-4">
+        <label
+          htmlFor="assignedTo"
+          className="block text-gray-700 font-bold mb-2"
+        >
+          Assigned to
+        </label>
         <select
           id="assignedTo"
           name="assignedTo"
           value={formData.assignedTo}
           onChange={handleChange}
+          className={`shadow appearance-none border ${
+            errors.assignedTo ? 'border-red-500' : 'border-gray-300'
+          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         >
           <option value="">Select developer</option>
-          {developers.map((dev) => {
-            return <option key={dev.id}>{dev.name}</option>;
-          })}
+          {developers.map((dev) => (
+            <option key={dev.id} value={dev.name}>
+              {dev.name}
+            </option>
+          ))}
         </select>
+        {errors.assignedTo && (
+          <p className="text-red-500 text-xs italic">{errors.assignedTo}</p>
+        )}
       </div>
-      <div className="form-group">
-        <label htmlFor="status">Status</label>
+      <div className="form-group mb-4">
+        <label htmlFor="status" className="block text-gray-700 font-bold mb-2">
+          Status
+        </label>
         <select
           id="status"
           name="status"
           value={formData.status}
           onChange={handleChange}
+          className={`shadow appearance-none border ${
+            errors.status ? 'border-red-500' : 'border-gray-300'
+          } rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         >
           <option value="enabled">Enabled</option>
           <option value="disabled">Disabled</option>
         </select>
       </div>
-      {isEdit ? (
-        <button type="submit" className="submit-button">
-          Edit project
-        </button>
-      ) : (
-        <button type="submit" className="submit-button">
-          Create project
-        </button>
-      )}
+      <button
+        type="submit"
+        className="bg-red-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto hover:bg-red-700"
+      >
+        {isEdit ? 'Edit Project' : 'Create Project'}
+      </button>
     </form>
   );
 };

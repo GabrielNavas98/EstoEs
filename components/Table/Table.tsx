@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -11,12 +11,12 @@ import {
   User,
   ChipProps,
 } from '@nextui-org/react';
-import { VerticalDotsIcon } from '@/components/icons/VerticalDotsIcon';
-import { EditIcon } from '@/components/icons/EditIcon';
-import { DeleteIcon } from '@/components/icons/DeleteIcon';
+import { VerticalDotsIcon } from '@/icons/VerticalDotsIcon';
+import { EditIcon } from '@/icons/EditIcon';
+import { DeleteIcon } from '@/icons/DeleteIcon';
 import { columns } from '../../data/data';
-import useProjectsStore from '@/data/useProjectsStore';
-import { Project } from '@/types/projectTypes';
+import useProjectsStore from '@/store/useProjectsStore';
+import Swal from 'sweetalert2';
 
 const statusColorMap: Record<string, ChipProps['color']> = {
   ENABLED: 'success',
@@ -25,7 +25,7 @@ const statusColorMap: Record<string, ChipProps['color']> = {
 
 export default function CustomTable() {
   const router = useRouter();
-  const { projectsData } = useProjectsStore();
+  const { projectsData, deleteProject } = useProjectsStore();
   let loading = false;
   const [filterValue, setFilterValue] = useState('');
 
@@ -71,108 +71,6 @@ export default function CustomTable() {
     });
   };
 
-  const renderCell = useCallback(
-    (project: Project, columnKey: React.Key): React.ReactNode => {
-      const cellValue = project[columnKey as keyof Project];
-
-      switch (columnKey) {
-        case 'info':
-          return (
-            <>
-              <p className="text-default-800">{project.name}</p>
-              <span className="text-default-400">
-                {formatDate(project.createdAt)}
-              </span>
-            </>
-          );
-        case 'manager':
-          return (
-            <User
-              avatarProps={{
-                radius: 'full',
-                size: 'sm',
-                src: project.avatarManager,
-              }}
-              classNames={{
-                description: 'text-default-500',
-              }}
-              name={cellValue as string}
-            >
-              {project.manager}
-            </User>
-          );
-        case 'designated':
-          return (
-            <User
-              avatarProps={{
-                radius: 'full',
-                size: 'sm',
-                src: project.designatedAvatar,
-              }}
-              classNames={{
-                description: 'text-default-500',
-              }}
-              description={project.assignedTo}
-              name={cellValue as string}
-            >
-              {project.assignedTo}
-            </User>
-          );
-        case 'status':
-          return (
-            <Chip
-              className="capitalize border-none gap-1 text-default-600"
-              color={statusColorMap[project.status.toUpperCase()]}
-              size="sm"
-              variant="dot"
-            >
-              {cellValue as string}
-            </Chip>
-          );
-        case 'actions':
-          return (
-            <div className="relative flex align-middle items-center gap-2">
-              <Dropdown className="bg-background border-1 border-default-200">
-                <DropdownTrigger>
-                  <Button
-                    isIconOnly
-                    radius="full"
-                    size="sm"
-                    variant="light"
-                    aria-label="More actions"
-                  >
-                    <VerticalDotsIcon />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Actions menu">
-                  <DropdownItem
-                    textValue="Edit"
-                    onClick={() =>
-                      void router.push(`/projectForm/${project.id}`)
-                    }
-                  >
-                    <div className="flex items-center gap-2">
-                      <EditIcon />
-                      Edit
-                    </div>
-                  </DropdownItem>
-                  <DropdownItem textValue="Delete">
-                    <div className="flex items-center gap-2">
-                      <DeleteIcon />
-                      Delete
-                    </div>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          );
-        default:
-          return;
-      }
-    },
-    []
-  );
-
   const onRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
@@ -181,6 +79,22 @@ export default function CustomTable() {
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterValue(e.target.value);
     setPage(1);
+  };
+
+  const handleDelete = async (id: string) => {
+    await Swal.fire({
+      title: 'Estas seguro de querer borrar el proyecto?',
+      text: 'No podras recuperarlo!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Borrar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteProject(id);
+      }
+    });
   };
 
   return (
@@ -208,10 +122,13 @@ export default function CustomTable() {
       </div>
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white border border-gray-200 w-full">
-          <thead className="hidden md:table-header-group">
+          <thead>
             <tr>
               {columns.map((column) => (
-                <th key={column.uid} className="py-3 px-5 border-b text-left">
+                <th
+                  key={column.uid}
+                  className="py-3 px-5 border-b text-left hidden md:table-cell"
+                >
                   {column.name}
                 </th>
               ))}
@@ -219,19 +136,113 @@ export default function CustomTable() {
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b hover:bg-gray-100 flex flex-col md:table-row"
-              >
-                {columns.map((column) => (
-                  <td
-                    key={column.uid}
-                    className="py-3 px-5 flex flex-col md:table-cell"
+              <tr key={item.id} className="border-b hover:bg-gray-100 ">
+                {/* name */}
+                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 ">
+                  <p className="text-default-800">{item.name}</p>
+                  <span className="text-default-400 text-sm">
+                    Creation Date: {formatDate(item.createdAt)}
+                  </span>
+                  <dl className="md:hidden">
+                    <dt className="sr-only">Assigned To</dt>
+                    <dd>
+                      <User
+                        avatarProps={{
+                          radius: 'full',
+                          size: 'sm',
+                          src: item.designatedAvatar,
+                        }}
+                        classNames={{
+                          description: 'text-default-500',
+                        }}
+                        name={item.assignedTo}
+                      >
+                        {item.assignedTo}
+                      </User>
+                    </dd>
+                  </dl>
+                </td>
+                {/* manager */}
+                <td className="hidden md:table-cell whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 ">
+                  <User
+                    avatarProps={{
+                      radius: 'full',
+                      size: 'sm',
+                      src: item.avatarManager,
+                    }}
+                    classNames={{
+                      description: 'text-default-500',
+                    }}
+                    name={item.manager}
                   >
-                    <span className="font-bold md:hidden">{column.name}</span>
-                    {renderCell(item, column.uid)}
-                  </td>
-                ))}
+                    {item.manager}
+                  </User>
+                </td>
+                {/* designated */}
+                <td className="hidden md:table-cell whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 ">
+                  <User
+                    avatarProps={{
+                      radius: 'full',
+                      size: 'sm',
+                      src: item.designatedAvatar,
+                    }}
+                    classNames={{
+                      description: 'text-default-500',
+                    }}
+                    name={item.assignedTo}
+                  >
+                    {item.assignedTo}
+                  </User>
+                </td>
+                {/* Status */}
+                <td className="hidden md:table-cell whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 ">
+                  <Chip
+                    className="capitalize border-none gap-1 text-default-600"
+                    color={statusColorMap[item.status.toUpperCase()]}
+                    size="sm"
+                    variant="dot"
+                  >
+                    {item.status}
+                  </Chip>
+                </td>
+                {/* Actions */}
+                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 ">
+                  <div className="relative flex align-middle items-center gap-2">
+                    <Dropdown className="bg-background border-1 border-default-200">
+                      <DropdownTrigger>
+                        <Button
+                          isIconOnly
+                          radius="full"
+                          size="sm"
+                          variant="light"
+                          aria-label="More actions"
+                        >
+                          <VerticalDotsIcon />
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu aria-label="Actions menu">
+                        <DropdownItem
+                          textValue="Edit"
+                          onClick={() => router.push(`/projectForm/${item.id}`)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <EditIcon />
+                            Edit
+                          </div>
+                        </DropdownItem>
+                        <DropdownItem
+                          textValue="Delete"
+                          onClick={() => void handleDelete(item.id)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <DeleteIcon />
+                            Delete
+                          </div>
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

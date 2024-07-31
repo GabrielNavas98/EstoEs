@@ -1,8 +1,5 @@
-/coverage/**/*
 /__tests__/**/*
 /components/icons/**/*
 next.config.js
 postcss.config.js
-/lib/prisma.ts
-/lib/singleton.ts
 dev-script.js
